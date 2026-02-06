@@ -9,6 +9,7 @@ import {processFormData} from "./lib/utils.js";
 import {initTable} from "./components/table.js";
 // @todo: подключение
 import {initPagination} from "./components/pagination.js";
+import {initSorting} from "./components/sorting.js";
 
 
 // Исходные данные используемые в render()
@@ -39,15 +40,17 @@ function render(action) {
     let state = collectState(); // состояние полей из таблицы
     let result = [...data]; // копируем для последующего изменения
     // @todo: использование
+    result = applySorting(result, state, action);
     result = applyPagination(result, state, action);
 
     sampleTable.render(result)
 }
 
+//Поключение к таблице шаблонов. Настройка таблицы
 const sampleTable = initTable({
     tableTemplate: 'table',
     rowTemplate: 'row',
-    before: [],
+    before: ['header'],
     after: ['pagination']
 }, render);
 
@@ -63,6 +66,11 @@ const applyPagination = initPagination(
         return el;
     }
 );
+
+const applySorting = initSorting([
+    sampleTable.header.elements.sortByDate,
+    sampleTable.header.elements.sortByTotal
+]);
 
 const appRoot = document.querySelector('#app');
 appRoot.appendChild(sampleTable.container);
